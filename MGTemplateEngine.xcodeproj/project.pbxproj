@@ -588,6 +588,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = MGTemplateEngine;
+				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Debug;
@@ -611,6 +612,7 @@
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				PRODUCT_NAME = MGTemplateEngine;
+				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
