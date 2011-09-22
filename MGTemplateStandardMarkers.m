@@ -548,7 +548,8 @@
 	} else if ([marker isEqualToString:SET]) {
 		if (args && [args count] == 2 && *outputEnabled) {
 			// Set variable arg1 to value arg2.
-			NSDictionary *newVar = [NSDictionary dictionaryWithObject:[args objectAtIndex:1] 
+            id arg2 = [args objectAtIndex:1];
+			NSDictionary *newVar = [NSDictionary dictionaryWithObject:[engine resolveVariable:arg2]
 															   forKey:[args objectAtIndex:0]];
 			if (newVar) {
 				*newVariables = newVar;
