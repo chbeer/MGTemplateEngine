@@ -266,7 +266,7 @@
 		// do nothing
 	}
 	
-	if (result) {
+	if (result && !([result isKindOfClass:[NSArray class]] && [(NSArray*)result count] == 1 && [[(NSArray*)result objectAtIndex:0] isKindOfClass:[NSNull class]])) {
 		// Got it with regular KVC. Work out parent and parentKey if necessary.
 		if (parent || parentKey) {
 			if ([dotBits count] > 1) {
@@ -292,28 +292,37 @@
 		if (numKeys > 1) { // otherwise no point in checking
 			NSObject *thisParent = currObj;
 			NSString *thisKey = nil;
+
+            NSNumberFormatter *numberFormatter = [NSNumberFormatter new];
+            
 			for (int i = 0; i < numKeys; i++) {
 				thisKey = [dotBits objectAtIndex:i];
 				NSObject *newObj = nil;
-				@try {
-					newObj = [currObj valueForKeyPath:thisKey];
-				}
-				@catch (NSException *e) {
-					// do nothing
-				}
-				// Check to see if this is an array which we can index into.
-				if (!newObj && [currObj isKindOfClass:[NSArray class]]) {
-					NSCharacterSet *numbersSet = [NSCharacterSet decimalDigitCharacterSet];
-					NSScanner *scanner = [NSScanner scannerWithString:thisKey];
-					NSString *digits;
-					BOOL scanned = [scanner scanCharactersFromSet:numbersSet intoString:&digits];
-					if (scanned && digits && [digits length] > 0) {
-						int index = [digits intValue];
-						if (index >= 0 && index < [((NSArray *)currObj) count]) {
-							newObj = [((NSArray *)currObj) objectAtIndex:index];
-						}
-					}
-				}
+                // Check to see if this is an array which we can index into.
+                NSNumber *number;
+				if ([currObj isKindOfClass:[NSArray class]] && (number = [numberFormatter numberFromString:thisKey]) != nil) {
+                    int index = [number intValue];
+                    if (index >= 0 && index < [((NSArray *)currObj) count]) {
+                        newObj = [((NSArray *)currObj) objectAtIndex:index];
+                    }
+//					NSScanner *scanner = [NSScanner scannerWithString:thisKey];
+//					NSString *digits;
+//					BOOL scanned = [scanner scanCharactersFromSet:numbersSet intoString:&digits];
+//					if (scanned && digits && [digits length] > 0) {
+//						int index = [digits intValue];
+//						if (index >= 0 && index < [((NSArray *)currObj) count]) {
+//							newObj = [((NSArray *)currObj) objectAtIndex:index];
+//						}
+//					}
+				} else {
+                    @try {
+                        newObj = [currObj valueForKeyPath:thisKey];
+                    }
+                    @catch (NSException *e) {
+                        // do nothing
+                    }
+                }
+                    
 				thisParent = currObj;
 				currObj = newObj;
 				if (!currObj) {
