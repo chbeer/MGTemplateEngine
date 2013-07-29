@@ -580,7 +580,7 @@
 	BOOL argTrue = NO;
 	if (arg) {
 		NSObject *val = [engine resolveVariable:arg];
-		if (val) {
+		if (val && ![val isKindOfClass:[NSNull class]]) {
 			if ([val isKindOfClass:[NSNumber class]]) {
 				argTrue = [(NSNumber *)val boolValue];
 			} else {
